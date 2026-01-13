@@ -1,6 +1,6 @@
 # AI Communication System Based on MCP
 
-（ [中文](README_zh.md) | English ）
+（ [中文](README.md) | English ）
 
 ## 📖 Project Introduction
 
