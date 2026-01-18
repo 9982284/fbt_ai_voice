@@ -1,0 +1,25 @@
+menu "FBT VOICE CONFIG"
+    config USE_FBT_SCREEN_TOUCH
+        bool "Is the touch screen enabled"
+        default y
+    config USE_FBT_SERVER_FOLLOW_OTA
+        bool "Do you want to enable server address following 0ta"
+        default y
+    config USE_FBT_AUDIO_SAMPLE_RATE
+        int "Audio sampling rate"
+        default 24000
+        help
+            音频采样率, 与对端设备交换Offer时是必填的,如果你是没有经过音频编码器的设备保持默认即可
+    config USE_FBT_AUDIO_FRAME_DURATION
+        int "Audio frame duration"
+        default 60
+        help
+            音频的帧时长，与对端设备交换Offer时是必填的,如果你是没有经过音频编码器的设备保持默认即可
+    config FBT_SERVER_ADDRESS
+        string "server address"
+        default "http://ota.zibby.me"
+        # default "http://192.168.3.7:19089/api/v1/ota"
+        help
+            输入服务器的 IP 地址或域名 
+
+endmenu

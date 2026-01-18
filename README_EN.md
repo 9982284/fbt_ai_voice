@@ -1,99 +1,99 @@
-# AI Communication System Based on MCP
+# AI Communication System Based on MCP Protocol
 
-（ [中文](README.md) | English ）
+([中文](README.md) | English)
 
 ## 📖 Project Introduction
 
--   A high-performance AI voice communication solution based on the ESP32 platform, providing HD, low-latency voice call and multi-party intercom capabilities for smart hardware。
--   This project is developed based on Brother Xia's open-source project - Xiaozhi AI Chatbot esp32 (latest V2.0 version). [Xiaozhi Open Source Address](https://github.com/78/xiaozhi-esp32)
+- A high-performance AI voice communication solution based on the ESP32 platform, providing HD, low-latency voice calls and multi-party intercom capabilities for smart hardware devices.
+
+- 👉 [An AI voice communication solution that enables AI to make calls, enter intercom rooms, manage groups, with special optimizations for mobile networks【bilibili】](https://www.bilibili.com/video/BV1X2kWB4ET7/?spm_id_from=333.1007.top_right_bar_window_dynamic.content.click&vd_source=f3da0e320c45f62d4876daddf98a6ba6)
 
 ## ✨ Core Capabilities
 
--   **AI Intelligent Control**: Realize AI automatic dialing, contact search, group joining and group rule compliance based on MCP protocol
--   **Network Stability**: Exclusive proprietary protocol, effectively adapt to mobile network base station switching and network fluctuations
--   **Ultimate Simplification**: Minimalist protocol design, reduce bandwidth occupation and improve stability
--   **Modular Design**: Adopt business manager and event bus design, realize decoupling between modules and unified interface management, greatly improve code maintainability and scalability.
--   **Audio Repeater Design**: Encapsulate system audio services through audio repeater and provide standardized interfaces, which greatly simplifies code transplantation and multi-platform adaptation process.
+- **AI Intelligent Control**: Achieve AI automatic dialing, contact lookup, group joining and group rule compliance based on the MCP protocol.
+- **Network Stability**: Proprietary private protocol that effectively copes with mobile network base station handovers and network fluctuations.
+- **Ultra Streamlined Design**: Minimalist protocol architecture reduces bandwidth usage and improves stability.
+- **Modular Design**: Adopts business manager and event bus architecture to achieve decoupling between modules and unified interface management, greatly improving code maintainability and scalability.
+- **Audio Repeater Design**: Encapsulates system audio services through an audio repeater to provide standardized interfaces, which greatly simplifies code transplantation and multi-platform adaptation processes.
 
 ## 🏗️ Design Highlights
 
 ### ▸ Event-driven Architecture
 
--   Module communication mechanism based on event bus, reduce coupling degree
--   Support plug-in expansion, new functions can be integrated quickly
+- Module communication mechanism based on event bus, reducing coupling degree
+- Supports plug-in expansion for rapid integration of new functions
 
 ### ▸ Platform-independent Audio Layer
 
--   Audio repeater abstraction layer, shield underlying hardware differences
--   Standardized audio interface, support rapid transplantation to new platforms
+- Audio repeater abstraction layer that shields underlying hardware differences
+- Standardized audio interface for quick transplantation to new platforms
 
 ### ▸ Dual-channel Network Adaptation
 
--   TCP/UDP hybrid strategy to cope with complex network environment
--   Intelligent retransmission and adaptive bit rate, ensure call continuity
+- TCP/UDP hybrid strategy for complex network environments
+- Intelligent retransmission and adaptive bit rate ensure call continuity
 
-## ✅ Implemented Functions
+## ✅ Implemented Features
 
 ### 🎤 Voice Communication
 
--   AI automatic dialing for voice calls
--   AI automatically joins intercom rooms for multi-party voice intercom
--   Support multi-group management (create, join, switch)
--   AI automatically search contacts and manage communication
--   Multi-language support
+- AI automatic dialing for voice calls
+- AI automatic joining of intercom rooms for multi-party voice intercom
+- Support multi-group management (join, switch)
+- AI automatic contact lookup and communication management
+- Multi-language support
 
 ### 🔊 Audio Processing
 
--   Adopt OPUS single-channel audio codec
--   Support intercommunication of devices with different sampling rates
--   ESP32S3 supports echo cancellation and audio noise reduction
--   Support ringtone interruption
+- Adopts OPUS single-channel audio codec
+- Supports interconnection of devices with different sampling rates
+- Echo cancellation and audio noise reduction support on ESP32S3
+- Ringtone interruption support
 
 ### 📦 Data Transmission
 
--   **AES-128 Encrypted Transmission**: Ensure the security and privacy of voice data
--   **Raw Stream Transmission Mode**: Reserve interfaces for expanding more audio protocols in the future
--   **Private Lightweight Protocol**: Minimalist design, maximize effective payload, ultra-low bandwidth occupation
--   **UDP Media Stream Transmission**: Realized based on UDP protocol, providing low-latency and high-efficiency real-time audio transmission
--   **TCP/UDP Dual-channel Service Discovery**: Solve the problem of frequent UDP port/IP changes in 4G network environment through dual-protocol channels to ensure stable service reachability
+- **AES-128 Encrypted Transmission**: Ensures the security and privacy of voice data
+- **Raw Stream Transmission Mode**: Reserves interfaces for expanding more audio protocols in the future
+- **Private Lightweight Protocol**: Minimalist design maximizes effective payload with extremely low bandwidth usage
+- **UDP Media Stream Transmission**: Implemented based on UDP protocol, providing low-latency and high-efficiency real-time audio transmission
+- **TCP/UDP Dual-channel Service Discovery**: Solves the problem of frequent UDP port/IP changes in 4G network environments through dual-protocol channels to ensure stable service reachability
 
-## Future Planning
+## Future Roadmap
 
 ### Cross-platform Expansion
 
--   Support Android/iOS APP, WebRTC web client, WeChat Mini Program
--   Realize full-scenario interconnection between AI devices, mobile terminals and desktop terminals
+- Support Android/iOS APP, WebRTC web client, WeChat Mini Program
+- Achieve full-scenario interconnection between AI devices, mobile terminals and desktop terminals
 
 ### Function Enhancement
 
--   Video call and real-time video intercom functions
--   Support more audio codecs (G.711A/B, G.722, Speex, etc.)
+- Video call and real-time video intercom functions
+- Support for more audio codecs (G.711A/B, G.722, Speex, etc.)
 
-## Quick Integration to Your Xiaozhi Chatbot (main)
+## 📦 Update Notes
 
-### Copy FBT source code to your project
+- **2026-01-18**
+    - Restructured the project and released it in component form, removed dependencies on the main project CMakeLists, added Kconfig for project configuration;
+    - Reconstructed each component in a modular way with clearer architecture;
+    - Added UDP enhanced mode for mobile networks to further ensure reliable signaling transmission;
+    - Added touch screen component associated with LVGL and a new touch dispatcher for global listening by other components;
+    - Added partial UI components: volume adjustment, buttons, file tabs, images and other general components.
 
-```
-fbt_repeater
-fbt_service
-fbt_transport
-fbt_utils
-```
+## Quick Integration into Your XiaoZhi Chatbot (`main`)
 
 ### Add Ringtone
 
-#### Copy main/assets/common/phone_in.ogg to your project
+#### Copy `main/assets/common/phone_in.ogg` to your project directory
 
-#### Add ringtone file mapping on `main/assets/lang_config.h`
+#### Add ringtone file mapping in `main/assets/lang_config.h`
 
 ```cpp
 namespace Lang {
 
-    //.....Other existing content.....
-
+    //.....Other existing content....
     namespace Sounds {
 
-        //.....Other existing content.....
+        //.....Other existing content....
 
         extern const char ogg_phone_in_start[] asm("_binary_phone_in_ogg_start");
         extern const char ogg_phone_in_end[] asm("_binary_phone_in_ogg_end");
@@ -105,56 +105,29 @@ namespace Lang {
 }
 ```
 
-#### Add language description `assets/locales/zh-CN/language.json` (Same for other languages)
+#### Add Language Descriptions `assets/locales/en-US/language.json` (Same for other languages)
 
 ```json
 {
     "language": {
-        "type": "zh-CN"
+        "type": "en-US"
     },
     "strings": {
         //.....Other existing content....
 
-        "FBT_PHONE_STARTED": "通话中",
-        "FBT_PHONE_AUDIO_IN": "语音来电",
-        "FBT_PHONE_VIDEO_IN": "视频来电",
-        "FBT_PHONE_RINGING": "等待接听",
-        "FBT_PHONE_CLOSED": "通话结束",
-        "FBT_HOLD_TO_TALK": "对讲模式",
-        "FBT_VOICE_SPEAKING": "正在讲话",
-        "FBT_VOICE_IN_SPEECH": "发言中"
+        "FBT_PHONE_STARTED": "In a call",
+        "FBT_PHONE_AUDIO_IN": "Voice call incoming",
+        "FBT_PHONE_VIDEO_IN": "Video call incoming",
+        "FBT_PHONE_RINGING": "Waiting for answer",
+        "FBT_PHONE_CLOSED": "Call ended",
+        "FBT_HOLD_TO_TALK": "Intercom mode",
+        "FBT_VOICE_SPEAKING": "Speaking now",
+        "FBT_VOICE_IN_SPEECH": "Someone is speaking"
     }
 }
 ```
 
-### Add the following source files in the project's `CMakeLists.txt`:
-
-```cmake
-# Core service layer
-set(SOURCES
-    # ... Other existing files ...
-    "fbt_service/fbt_manager.cc"
-    "fbt_transport/fbt_phone_transport.cc"
-    "fbt_transport/fbt_voice_transport.cc"
-    "fbt_transport/fbt_mqtt_server.cc"
-    "fbt_transport/fbt_http.cc"
-    "fbt_repeater/fbt_audio_repeater.cc"
-);
-```
-
-```cmake
-# Include directory configuration
-set(INCLUDE_DIRS
-    "."
-    # ... Other existing directories ...
-    "fbt_service"
-    "fbt_transport"
-    "fbt_repeater"
-    "fbt_utils"
-)
-```
-
-### Add new device state (`device_state.h`)
+### Add Device State (`device_state.h`)
 
 ```cpp
 enum DeviceState {
@@ -168,7 +141,7 @@ enum DeviceState {
 
 #### `application.h`
 
--   **Define global events**
+- **Define Global Events**
 
 ```cpp
 #include "fbt_manager.h"
@@ -178,37 +151,37 @@ enum DeviceState {
  */
 #define MAIN_EVENT_FBT_SEND_AUDIO (1 << 10)
 /**
- * FBT event activated, service managed by FBT
+ * FBT service activation event, service managed by FBT
  */
 #define MAIN_EVENT_FBT_START_SESSION (1 << 11)
 /**
- * FBT event deactivated, switch back to normal mode
+ * FBT service deactivation event, switch back to normal mode
  */
 #define MAIN_EVENT_FBT_STOP_SESSION (1 << 12)
 ```
 
--   **Define manager**
+- **Define Manager**
 
 ```cpp
 class Application {
   private:
-    // ... Other existing content ...
+    // ... Other existing members ...
     FbtManager &fbt_manager_;
 };
 ```
 
-### Modify `application.cc`
+### `application.cc` Modifications
 
--   **Initialization**
+- **Initialization**
 
 ```cpp
-// Initialize FBT manager in constructor
+// Initialize FBT Manager in constructor
 Application::Application() : fbt_manager_(FbtManager::GetInstance()) {
-  // ... Other existing content ...
+  // ... Other existing initialization ...
 }
 ```
 
--   **Startup function `Application::Start()`**
+- **Startup Function `Application::Start()`**
 
 ```cpp
 void Application::Start() {
@@ -225,7 +198,7 @@ void Application::Start() {
         }
     };
 
-      // Start FBT service manager
+    // Start FBT service manager
     if (!fbt_manager_.Start(event_group_, audio_service_)) {
         ESP_LOGW(TAG, "FBT services failed to start, continuing...");
     }
@@ -252,16 +225,16 @@ void Application::Start() {
 }
 ```
 
--   **Main Event Loop `Application::MainEventLoop()`**
+- **Main Event Loop `Application::MainEventLoop()`**
 
 ```cpp
 void Application::MainEventLoop() {
     while (true) {
         auto bits = xEventGroupWaitBits(event_group_, MAIN_EVENT_FBT_SEND_AUDIO | MAIN_EVENT_FBT_START_SESSION | MAIN_EVENT_FBT_STOP_SESSION | MAIN_EVENT_SCHEDULE | MAIN_EVENT_SEND_AUDIO | MAIN_EVENT_WAKE_WORD_DETECTED | MAIN_EVENT_VAD_CHANGE | MAIN_EVENT_CLOCK_TICK | MAIN_EVENT_ERROR, pdTRUE, pdFALSE, portMAX_DELAY);
 
-        //.....Other existing content.....
+        //.....Other existing event handling.....
 
-         // Transfer microphone audio to FBT management
+        // Pass microphone audio to FBT management
         if (bits & MAIN_EVENT_FBT_SEND_AUDIO) {
             while (auto packet = audio_service_.PopPacketFromSendQueue()) {
                 if (!fbt_manager_.SendAudio(std::move(packet))) {
@@ -283,7 +256,7 @@ void Application::MainEventLoop() {
 }
 ```
 
--   **State Machine Processing `Application::SetDeviceState()`**
+- **State Machine Processing `Application::SetDeviceState()`**
 
 ```cpp
 void Application::SetDeviceState(DeviceState state) {
@@ -300,24 +273,22 @@ void Application::SetDeviceState(DeviceState state) {
 }
 ```
 
-#### Add Ringtone Interruption `main/audio/audio_service.cc`
+### Add Ringtone Interruption `main/audio/audio_service.cc`
 
 ```cpp
 // audio_service.h
-
 class AudioService {
   public:
-    //......Other existing content.....
+    //......Other existing methods.....
     void FbtInterruptPlayback(); //Interrupt method
   private:
-    //......Other existing content.....
+    //......Other existing members.....
     bool fbt_interrupt_playback_; //Interrupt flag
 };
 ```
 
 ```cpp
 // audio_service.cc
-
 void AudioService::FbtInterruptPlayback() {
     fbt_interrupt_playback_ = true;
     std::lock_guard<std::mutex> lock(audio_queue_mutex_);
@@ -361,23 +332,25 @@ void AudioService::PlaySound(const std::string_view &ogg) {
 
 ## 💬 About The Project
 
--   We believe that AI should not only be a passive Q&A machine, but also a **housekeeper** that facilitates life. This project integrates AI into daily communication scenarios in a real sense, bringing a more natural and efficient interactive experience.
--   This is an ESP32 AI voice communication project open-sourced based on "Brother Xia's Xiaozhi AI Chatbot".
--   If you have any ideas or suggestions, please feel free to raise Issues.
+- We believe that AI should not only be a passive Q&A machine, but also a **personal steward** that brings convenience to life. This project truly integrates AI into daily communication scenarios and delivers a more natural and efficient interactive experience.
+
+- This project is developed based on the latest v2.0 open-source project of Brother Xia's XiaoZhi AI Chatbot for ESP32, [XiaoZhi Open-source Address](https://github.com/78/xiaozhi-esp32).
+
+- Feel free to raise Issues if you have any ideas or suggestions.
 
 ### 🏢 About Starlink Software
 
-We are a team focusing on audio and video communication & streaming media technology, with many years of experience in emergency command and industrial communication fields.
+We are a team with many years of experience focusing on audio and video communication and streaming media technology in emergency command and industrial communication fields.
 
 **Our Products Include**:
 
--   🚨 **Converged Communication Platform** - Interconnection of multi-system voice dispatch
--   📹 **Audio & Video Convergence Platform** - Unified management of large-scale audio and video
--   🎮 **Command and Dispatch Platform** - Visual command and collaborative combat, integrating video conferencing, communication dispatch, video dispatch and other functions
+- 🚨 **Converged Communication Platform** — Interconnection of multi-system voice dispatch
+- 📹 **Audio & Video Convergence Platform** — Unified management of large-scale audio and video streams
+- 🎮 **Command and Dispatch Platform** — Visual command and collaborative operations, integrating video conferencing, communication dispatch, video dispatch and other functions
 
 **Application Industries**:
 
--   Emergency management and fire rescue
--   Judicial supervision and public security
--   Government command and dispatch center
--   Smart city and Internet of Things
+- Emergency management and fire rescue
+- Judicial correctional facilities and public security
+- Government command and dispatch centers
+- Smart cities and the Internet of Things

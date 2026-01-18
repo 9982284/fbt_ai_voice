@@ -28,12 +28,6 @@ set(SOURCES "audio/audio_codec.cc"
             "protocols/protocol.cc"
             "protocols/mqtt_protocol.cc"
             "protocols/websocket_protocol.cc"
-            "fbt_service/fbt_manager.cc"
-            "fbt_transport/fbt_phone_transport.cc"
-            "fbt_transport/fbt_voice_transport.cc"
-            "fbt_transport/fbt_mqtt_server.cc"
-            "fbt_transport/fbt_http.cc"
-            "fbt_repeater/fbt_audio_repeater.cc"
         
             "mcp_server.cc"
             "system_info.cc"
@@ -45,16 +39,17 @@ set(SOURCES "audio/audio_codec.cc"
             "main.cc"
             )
 
+
+
+
+list(APPEND SOURCES ${FBT_CPP_FILES})
+
 set(INCLUDE_DIRS "." 
     "display" 
     "display/lvgl_display" 
     "display/lvgl_display/jpg" 
     "audio" 
     "protocols" 
-    "fbt_service" 
-    "fbt_transport" 
-    "fbt_repeater" 
-    "fbt_utils" 
 )
 
 # Add board common files
