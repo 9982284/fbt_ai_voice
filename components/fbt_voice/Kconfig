@@ -17,8 +17,7 @@ menu "FBT VOICE CONFIG"
             音频的帧时长，与对端设备交换Offer时是必填的,如果你是没有经过音频编码器的设备保持默认即可
     config FBT_SERVER_ADDRESS
         string "server address"
-        default "http://ota.zibby.me"
-        # default "http://192.168.3.7:19089/api/v1/ota"
+        default "http://device.fbtai.cn"
         help
             输入服务器的 IP 地址或域名 
 
