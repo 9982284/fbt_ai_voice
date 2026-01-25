@@ -30,7 +30,7 @@ class FbtVoiceTransport {
     FbtVoiceTransport(EventGroupHandle_t event_group, FbtAudioRepeater *audio_repeater, FbtMqttServer *mqtt_server);
     ~FbtVoiceTransport();
 
-    bool Start(std::string data);
+    bool Start();
     void OnAudioMicrophone(std::unique_ptr<AudioStreamPacket> packet);
     void OnSpeaking(const bool enable);
     void OnEnterVoiceRoom(const std::string &data);

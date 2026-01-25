@@ -6,7 +6,27 @@
 
 - 一款基于 ESP32 平台 的高性能 AI 语音通讯解决方案，为智能硬件提供高清、低延迟的语音通话与多方对讲能力。
 
-- 👉 [一套 AI 语音通讯方案，可以让ai帮你拔打电话，进入对讲室，管理群组，针对移动网络的特殊优化【bilibili】](https://www.bilibili.com/video/BV1X2kWB4ET7/?spm_id_from=333.1007.top_right_bar_window_dynamic.content.click&vd_source=f3da0e320c45f62d4876daddf98a6ba6)
+- 👉[烧录完进这里连接设备 **【后台管理地址】**](https://voice.fbtai.cn/)
+
+- 👉[国内用户访问进这里 **【gitee】**](https://gitee.com/fbtgateway/fbt_ai_voice)
+
+- 👉 [一套 AI 语音通讯方案，可以让ai帮你拔打电话，进入对讲室，管理群组，针对移动网络的特殊优化【bilibili】](https://www.bilibili.com/video/BV1f6zrBCEVw/?spm_id_from=333.788.recommend_more_video.-1&trackid=web_related_0.router-related-2206419-k4qpm.1769317377521.3)
+
+## 📦 更新说明
+
+- **2026-01-25**
+    - **新增增强udp服务**，支持udp必达消息；
+    - **新增mcp本地化功能**：不再依懒服务器的mcp对接,直接由设备本身向大模型发送mcp工具说明（**兼容性更广**）;
+    - 去除多余 boards 配置, 新增一个 touch 主板配置;
+    - 服务参数优化：各组件启动时所需的配置优化从内存中读取,解决启动时无网络时全程都无法连接服务器的问题;
+    - 其他说明正在更新....
+
+- **2026-01-18**
+    - 重构项目，以组件的形式发布, 去除项目主 CMakeLists 的依懒，新增 使用 Kconig 对项目进行配置;
+    - 模块化重构各组件，架构更清晰；
+    - 新增针对移动网络udp增强模式，进一步确保信令必达;
+      = 新增触模屏组件，关联lvgl,并新增触模分发器,代其他组件全局监听;
+    - 新增部份ui组件, 音量调节、按钮、文件标签、图片等通用组件;
 
 ## ✨ 核心能力
 
@@ -90,41 +110,11 @@
 
 - 更多音频编解码器支持（G.711A/B、G.722、Speex 等）
 
-## 📦 更新说明
-
-- **2026-01-18**
-    - 重构项目，以组件的形式发布, 去除项目主 CMakeLists 的依懒，新增 使用 Kconig 对项目进行配置;
-    - 模块化重构各组件，架构更清晰；
-    - 新增针对移动网络udp增强模式，进一步确保信令必达;
-      = 新增触模屏组件，关联lvgl,并新增触模分发器,代其他组件全局监听;
-    - 新增部份ui组件, 音量调节、按钮、文件标签、图片等通用组件;
-
 ## 快速集成到你的小智聊天机器人上（`main`）
 
 #### 添加铃声
 
 ##### 复制 main/assets/common/phone_in.ogg 到你的项目上
-
-##### 在 `main/assets/lang_config.h` 上添加铃声文件映射
-
-```cpp
-
-namespace Lang {
-
-    //.....其他已有....
-    namespace Sounds {
-
-        //.....其他已有....
-
-        extern const char ogg_phone_in_start[] asm("_binary_phone_in_ogg_start");
-        extern const char ogg_phone_in_end[] asm("_binary_phone_in_ogg_end");
-        static const std::string_view OGG_PHONE_IN {
-        static_cast<const char*>(ogg_phone_in_start),
-        static_cast<size_t>(ogg_phone_in_end - ogg_phone_in_start)
-        };
-    }
-}
-```
 
 #### 添加语言描述 `assets/locales/zh-CN/language.json` （其他语言类似）
 

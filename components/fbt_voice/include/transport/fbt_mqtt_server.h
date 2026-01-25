@@ -14,7 +14,7 @@ class FbtMqttServer {
     ~FbtMqttServer();
 
     // 启动停止
-    bool Start(std::string data);
+    bool Start();
     void Stop();
 
     // 发送消息
@@ -26,8 +26,6 @@ class FbtMqttServer {
   private:
     void on_mqtt_message(const std::string &topic, const std::string &payload);
     void handle_json_payload(const std::string &payload);
-    void handle_phone_call(cJSON *root);
-    void handle_phone_close(cJSON *root);
 
     // void HandlePhoneOk(cJSON *root);
 

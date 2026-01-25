@@ -76,7 +76,6 @@ class FbtManager {
 
   private:
     std::unique_ptr<FbtAudioRepeater> audio_repeater_;
-    std::unique_ptr<FbtHttp> fbt_http_;
     std::unique_ptr<FbtMqttServer> fbt_mqtt_;
     std::unique_ptr<FbtPhoneTransport> fbt_phone_;
     std::unique_ptr<FbtVoiceTransport> fbt_voice_;

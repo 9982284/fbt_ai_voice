@@ -1,24 +1,21 @@
 menu "FBT VOICE CONFIG"
     config USE_FBT_SCREEN_TOUCH
-        bool "Is the touch screen enabled"
-        default y
-    config USE_FBT_SERVER_FOLLOW_OTA
-        bool "Do you want to enable server address following 0ta"
-        default y
+        bool "Enable touch screen"
+        default n
     config USE_FBT_AUDIO_SAMPLE_RATE
         int "Audio sampling rate"
         default 24000
         help
-            音频采样率, 与对端设备交换Offer时是必填的,如果你是没有经过音频编码器的设备保持默认即可
+            The audio sampling rate is required when exchanging offers with the peer device. If you are a device that has not gone through an audio encoder, you can keep it as default
     config USE_FBT_AUDIO_FRAME_DURATION
         int "Audio frame duration"
         default 60
         help
-            音频的帧时长，与对端设备交换Offer时是必填的,如果你是没有经过音频编码器的设备保持默认即可
+            The frame duration of the audio is required when exchanging offers with the peer device. If you are a device that has not gone through an audio encoder, you can keep it as default
     config FBT_SERVER_ADDRESS
-        string "server address"
-        default "http://device.fbtai.cn"
+        string "Server address"
+        default "http://mcp-device.fbtai.cn"
         help
-            输入服务器的 IP 地址或域名 
+            The address of the server 
 
 endmenu

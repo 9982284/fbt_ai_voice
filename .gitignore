@@ -4,6 +4,7 @@ docs/
 .vscode/
 managed_components/
 .devcontainer/
+sdkconfig
 sdkconfig.old
 dependencies.lock
 .env

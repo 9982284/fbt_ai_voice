@@ -56,49 +56,17 @@ FbtVoiceTransport::~FbtVoiceTransport() {
     close_server();
 }
 
-bool FbtVoiceTransport::Start(std::string data) {
+bool FbtVoiceTransport::Start() {
     ESP_LOGI(TAG, "FbtVoiceTransport starting...");
 
-    // 解析 JSON
-    cJSON *root = cJSON_Parse(data.c_str());
-    if (!root) {
-        ESP_LOGE(TAG, "Failed to parse JSON");
-        return false;
-    }
+    Settings settings("fbt_voice", false);
 
-    // 提取 deviceId
-    cJSON *device_id_json = cJSON_GetObjectItem(root, "deviceId");
-    if (device_id_json && cJSON_IsString(device_id_json)) {
-        device_id_ = device_id_json->valuestring;
-    }
+    server_addr_ = settings.GetString("host");
+    server_port_ = settings.GetInt("port");
+    group_id_ = settings.GetString("groupId");
 
-    // 提取 voice 配置
-    cJSON *voice_json = cJSON_GetObjectItem(root, "voice");
-    if (!voice_json || !cJSON_IsObject(voice_json)) {
-        cJSON_Delete(root);
-        ESP_LOGE(TAG, "Missing voice configuration");
-        return false;
-    }
-
-    // 从 voice 对象中提取 groupId, host, port
-    cJSON *group_id_json = cJSON_GetObjectItem(voice_json, "groupId");
-    cJSON *host_json = cJSON_GetObjectItem(voice_json, "host");
-    cJSON *port_json = cJSON_GetObjectItem(voice_json, "port");
-
-    if (group_id_json && cJSON_IsString(group_id_json)) {
-        group_id_ = group_id_json->valuestring;
-    }
-
-    if (host_json && cJSON_IsString(host_json)) {
-        server_addr_ = host_json->valuestring;
-    }
-
-    if (port_json && cJSON_IsNumber(port_json)) {
-        server_port_ = port_json->valueint;
-    }
-
-    // 释放内存
-    cJSON_Delete(root);
+    Settings config_setting("fbt_config", false);
+    device_id_ = config_setting.GetString("deviceId");
 
     // 验证必要参数
     if (server_addr_.empty() || server_port_ == 0 || device_id_.empty()) {
@@ -164,13 +132,26 @@ void FbtVoiceTransport::on_udp_packet(const std::string &payload) {
         return;
     }
     uint8_t packet_type = static_cast<uint8_t>(payload[0]);
-    if (packet_type == 0x00) {
+    std::string data = payload.substr(1);
+    switch (packet_type) {
+        case PacketType::CONTROL:
+        case PacketType::RELIABLE_CONTROL:
+            on_udp_message(data);
+            break;
+        case PacketType::AUDIO:
+            on_remote_audio(data);
+            break;
+        default:
+            ESP_LOGW(TAG, "Unknown packet type: 0x%02X", packet_type);
+            break;
+    }
+    /* if (packet_type == PacketType::CONTROL ||) {
         on_udp_message(payload.substr(1));
-    } else if (packet_type == 0x01) {
+    } else if (packet_type == PacketType::AUDIO) {
         on_remote_audio(payload.substr(1));
     } else {
         ESP_LOGW(TAG, "Unknown packet type: 0x%02X", packet_type);
-    }
+    } */
 }
 
 void FbtVoiceTransport::on_udp_message(const std::string &data) {
@@ -288,7 +269,7 @@ void FbtVoiceTransport::OnAudioMicrophone(std::unique_ptr<AudioStreamPacket> pac
 
     std::string payload_;
     payload_.reserve(1 + packet->payload.size()); // 预分配空间
-    payload_.push_back(0x01);
+    payload_.push_back(PacketType::AUDIO);
     payload_.append(reinterpret_cast<const char *>(packet->payload.data()),
                     packet->payload.size());
 
@@ -369,7 +350,7 @@ void FbtVoiceTransport::send_ping() {
     std::lock_guard<std::mutex> lock(channel_mutex_);
     std::string packet;
     packet.reserve(1 + device_id_.size());
-    packet.push_back(0x02);
+    packet.push_back(PacketType::KEEPALIVE);
     packet.append(device_id_.c_str());
     udp_->Send(packet);
 }
@@ -381,9 +362,9 @@ void FbtVoiceTransport::send_udp_message(const std::string &json_str) {
     std::lock_guard<std::mutex> lock(channel_mutex_);
     std::string packet;
     packet.reserve(1 + json_str.size());
-    packet.push_back(0x00);
+    packet.push_back(PacketType::CONTROL);
     packet.append(json_str);
-    udp_->SendMust(packet);
+    udp_->Send(packet);
 }
 
 void FbtVoiceTransport::start_on_timeout(int timeout_us) {

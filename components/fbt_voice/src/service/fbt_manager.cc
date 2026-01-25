@@ -7,10 +7,12 @@
 #include "fbt_audio_repeater.h"
 #include "fbt_event_bus.h"
 #include "fbt_http.h"
+#include "fbt_mcp_service.h"
 #include "fbt_mqtt_server.h"
 #include "fbt_phone_transport.h"
 #include "fbt_voice_transport.h"
 #include <esp_log.h>
+
 #define TAG "fbt_manager"
 
 FbtManager &FbtManager::GetInstance() {
@@ -75,24 +77,24 @@ bool FbtManager::Start(EventGroupHandle_t event_, AudioService &audio_service) {
 
     event_group_ = event_;
     audio_service_ = &audio_service;
-    fbt_http_ = std::make_unique<FbtHttp>();
-    std::string data = fbt_http_->GetConfig();
-    if (data.empty()) {
-        ESP_LOGE(TAG, "Failed to get config");
-        return false;
-    }
+
+    auto &fbt_http_ = FbtHttp::Instance();
+    fbt_http_.GetConfig();
 
     Listener();
+
+    auto &mcp_server_ = FbtMcpServer::Instance();
+    mcp_server_.Init();
 
     audio_repeater_ = std::make_unique<FbtAudioRepeater>(audio_service_);
     // 创建并启动MQTT服务
     fbt_mqtt_ = std::make_unique<FbtMqttServer>();
-    if (!fbt_mqtt_->Start(data)) {
+    if (!fbt_mqtt_->Start()) {
         ESP_LOGE(TAG, "Failed to start MQTT server");
     }
 
     fbt_voice_ = std::make_unique<FbtVoiceTransport>(event_, audio_repeater_.get(), fbt_mqtt_.get());
-    fbt_voice_->Start(data);
+    fbt_voice_->Start();
 
     fbt_phone_ = std::make_unique<FbtPhoneTransport>(event_, audio_repeater_.get(), fbt_mqtt_.get());
 

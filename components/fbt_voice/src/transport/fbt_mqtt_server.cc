@@ -30,7 +30,7 @@ FbtMqttServer::~FbtMqttServer() {
     Stop();
 }
 
-bool FbtMqttServer::Start(std::string data) {
+bool FbtMqttServer::Start() {
     ESP_LOGI(TAG, "fbt Mqtt starting...");
 
     // 如果已经启动，先停止
@@ -39,89 +39,20 @@ bool FbtMqttServer::Start(std::string data) {
         Stop();
     }
 
-    // 解析传入的 JSON 数据
-    cJSON *root = cJSON_Parse(data.c_str());
-    if (root == NULL) {
-        ESP_LOGE(TAG, "Failed to parse JSON response");
-        return false; // 修正：需要返回 false
-    }
+    Settings settings("fbt_mqtt", true);
 
-    // 从 data 参数中获取 mqtt 配置
-    cJSON *fbt_mqtt = cJSON_GetObjectItem(root, "mqtt");
-    if (!cJSON_IsObject(fbt_mqtt)) {
-        cJSON_Delete(root);
-        ESP_LOGE(TAG, "Invalid mqtt configuration in JSON");
+    std::string server_host = settings.GetString("host");
+    int server_port = settings.GetInt("port");
+    std::string client_id = settings.GetString("clientId");
+    std::string username = settings.GetString("username");
+    std::string password = settings.GetString("password");
+
+    if (server_host.empty() || !server_port) {
+        ESP_LOGI(TAG, "Failed to connect to endpoint");
         return false;
     }
 
-    // 从 JSON 中提取配置项
-    cJSON *server_host_json = cJSON_GetObjectItem(fbt_mqtt, "host");
-    cJSON *server_port_json = cJSON_GetObjectItem(fbt_mqtt, "port");
-    cJSON *client_id_json = cJSON_GetObjectItem(fbt_mqtt, "clientId");
-    cJSON *username_json = cJSON_GetObjectItem(fbt_mqtt, "username");
-    cJSON *password_json = cJSON_GetObjectItem(fbt_mqtt, "password");
-    // cJSON *keepalive_interval_json = cJSON_GetObjectItem(fbt_mqtt, "keepalive");
-    cJSON *topics_json = cJSON_GetObjectItem(fbt_mqtt, "topics");
-
-    // 验证必要参数
-    if (!server_host_json || !cJSON_IsString(server_host_json)) {
-        cJSON_Delete(root);
-        ESP_LOGE(TAG, "MQTT host is missing or invalid");
-        return false;
-    }
-
-    if (!topics_json || !cJSON_IsArray(topics_json)) {
-        cJSON_Delete(root);
-        ESP_LOGE(TAG, "Topics configuration is missing or invalid");
-        return false;
-    }
-
-    // 提取字符串值
-    std::string server_host = server_host_json->valuestring;
-    std::string client_id = "";
-    std::string username = "";
-    std::string password = "";
-
-    // 设置默认值
-    int server_port = 1883;
     int keepalive_interval = 180;
-
-    // 检查并解析可选参数
-    if (server_port_json && cJSON_IsNumber(server_port_json)) {
-        server_port = server_port_json->valueint;
-    }
-
-    if (client_id_json && cJSON_IsString(client_id_json)) {
-        client_id = client_id_json->valuestring;
-    }
-
-    if (username_json && cJSON_IsString(username_json)) {
-        username = username_json->valuestring;
-    }
-
-    if (password_json && cJSON_IsString(password_json)) {
-        password = password_json->valuestring;
-    }
-
-    /*   if (keepalive_interval_json && cJSON_IsNumber(keepalive_interval_json)) {
-          keepalive_interval = keepalive_interval_json->valueint;
-      } */
-
-    // 验证必要参数
-    if (server_host.empty()) {
-        cJSON_Delete(root);
-        ESP_LOGE(TAG, "fbt Mqtt not configured: host is empty");
-        return false;
-    }
-
-    // 释放 JSON 内存
-    cJSON_Delete(root);
-
-    if (topic_json_.empty()) {
-        ESP_LOGE(TAG, "Cannot get topics: JSON is empty");
-        return false;
-    }
-
     // 创建 MQTT 客户端并连接
     auto network = Board::GetInstance().GetNetwork();
     mqtt_ = network->CreateMqtt(mqtt_id_);
@@ -135,6 +66,9 @@ bool FbtMqttServer::Start(std::string data) {
 
     mqtt_->OnMessage([this](const std::string &topic, const std::string &payload) {
         ESP_LOGI(TAG, "Received MQTT: topic=%s, len=%d", topic.c_str(), payload.length());
+        if (!is_active_) {
+            is_active_ = true;
+        }
         this->on_mqtt_message(topic, payload);
     });
 
@@ -146,7 +80,7 @@ bool FbtMqttServer::Start(std::string data) {
         }
         if (Board::GetInstance().GetBoardType() == "ML307") {
             if (auto *at_modem = dynamic_cast<AtModem *>(Board::GetInstance().GetNetwork())) {
-                at_modem->GetAtUart()->SendCommand("AT+MQTTCFG=\"pingreq\"," + std::to_string(mqtt_id_) + ",30");
+                at_modem->GetAtUart()->SendCommand("AT+MQTTCFG=\"pingreq\"," + std::to_string(mqtt_id_) + ",50");
             }
         }
     });
@@ -209,30 +143,6 @@ void FbtMqttServer::handle_json_payload(const std::string &payload) {
     cJSON_Delete(root);
 }
 
-void FbtMqttServer::handle_phone_call(cJSON *root) {
-    ESP_LOGI(TAG, "Handling phone call event");
-
-    // 提取需要的信息
-    char *json_str = cJSON_PrintUnformatted(root);
-    if (!json_str)
-        return;
-
-    handle_event_bus(FbtEvents::START_PHONE, json_str);
-
-    cJSON_free(json_str);
-}
-
-void FbtMqttServer::handle_phone_close(cJSON *root) {
-    ESP_LOGI(TAG, "Handling phone close event");
-
-    char *json_str = cJSON_PrintUnformatted(root);
-    if (!json_str)
-        return;
-
-    handle_event_bus(FbtEvents::CLOSE_PHONE, json_str);
-    cJSON_free(json_str);
-}
-
 void FbtMqttServer::async_send_text(void *arg) {
     AsyncSendJson *self = static_cast<AsyncSendJson *>(arg);
     if (self && self->instance) {
@@ -248,10 +158,6 @@ void FbtMqttServer::async_send_text(void *arg) {
 }
 
 void FbtMqttServer::handle_event_bus(const std::string &type, const std::string &json) {
-    if (!is_active_ || !mqtt_) {
-        ESP_LOGW(TAG, "MQTT not active, cannot send");
-        return;
-    }
     auto &event_bus = FbtEventBus::GetInstance();
     event_bus.PublishAsync(type, json);
 }

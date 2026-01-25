@@ -10,6 +10,7 @@
 class FbtUdp : public Udp {
   private:
     std::unique_ptr<Udp> udp_;
+    std::string ack_packet_;
     int max_retries_;
     int retries_ = 0;
     std::string payload_;
@@ -30,7 +31,7 @@ class FbtUdp : public Udp {
 
     TaskHandle_t high_priority_task_ = nullptr;
     SemaphoreHandle_t ack_semaphore_ = nullptr;
-    std::string ack_packet_;
+
     bool task_running_ = false;
 
     /* static void high_priority_ack_task(void *arg) {

@@ -1,5 +1,6 @@
 
 #include <cJSON.h>
+#include <settings.h>
 #include <string>
 
 namespace FbtConfig {
@@ -29,6 +30,25 @@ namespace FbtConfig {
             cJSON_AddNumberToObject(root, "channels", 1);
             return root;
         };
+        static std::string getUrl(std::string url) {
+            std::string server_addr = CONFIG_FBT_SERVER_ADDRESS;
+            if (server_addr.back() != '/') {
+                server_addr += "/" + url;
+            } else {
+                server_addr += url;
+            }
+            return server_addr;
+        };
+
+      private:
+        static std::string get_ota_url() {
+            Settings settings("wifi", false);
+            std::string url = settings.GetString("ota_url");
+            if (url.empty()) {
+                url = CONFIG_OTA_URL;
+            }
+            return url;
+        }
     };
 
     class Helper {

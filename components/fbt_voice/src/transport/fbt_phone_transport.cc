@@ -71,7 +71,7 @@ void FbtPhoneTransport::OnAudioMicrophone(std::unique_ptr<AudioStreamPacket> pac
 
     // 准备包头（无论是否加密都需要）
     std::string nonce(session_.nonce);
-    nonce[0] = 0x01; // 音频包类型
+    nonce[0] = PacketType::AUDIO; // 音频包类型
     *(uint16_t *)&nonce[2] = htons(packet->payload.size());
     *(uint32_t *)&nonce[8] = htonl(packet->timestamp);
     *(uint32_t *)&nonce[12] = htonl(++local_sequence_);
@@ -363,22 +363,14 @@ bool FbtPhoneTransport::send_udp_message(const std::string &type) {
     if (!udp_) {
         return false;
     }
-
-    std::lock_guard<std::mutex> lock(channel_mutex_);
-
-    // 准备nonce数据
-    std::string nonce(session_.nonce);
-    nonce[0] = 0x00;
     std::string json_str = generate_json(type);
     if (json_str.empty())
         return false;
-
+    std::lock_guard<std::mutex> lock(channel_mutex_);
     std::string packet;
-    size_t total_size = nonce.size() + json_str.size();
-    packet.reserve(total_size);
-    packet.append(nonce);
+    packet.reserve(1 + json_str.size());
+    packet.push_back(PacketType::RELIABLE_CONTROL);
     packet.append(json_str);
-
     bool result = udp_->SendMust(packet) > 0;
     return result;
 }
@@ -397,19 +389,24 @@ void FbtPhoneTransport::handle_call_in() {
 }
 
 // 处理接收到的数据
-void FbtPhoneTransport::on_udp_packet(const std::string &data) {
-    if (data.empty()) {
+void FbtPhoneTransport::on_udp_packet(const std::string &payload) {
+    if (payload.empty()) {
         return;
     }
 
-    uint8_t packet_type = static_cast<uint8_t>(data[0]);
+    uint8_t packet_type = static_cast<uint8_t>(payload[0]);
 
-    if (packet_type == 0x00) {
-        handle_json(data.substr(1));
-    } else if (packet_type == 0x01) {
-        on_remote_audio(data);
-    } else {
-        ESP_LOGW(TAG, "Unknown packet type: 0x%02X", packet_type);
+    switch (packet_type) {
+        case PacketType::CONTROL:
+        case PacketType::RELIABLE_CONTROL:
+            handle_json(payload.substr(1));
+            break;
+        case PacketType::AUDIO:
+            on_remote_audio(payload);
+            break;
+        default:
+            ESP_LOGW(TAG, "Unknown packet type: 0x%02X", packet_type);
+            break;
     }
 }
 
@@ -475,7 +472,7 @@ void FbtPhoneTransport::on_remote_audio(const std::string &data) {
     }
 
     // 解析包头（无论是否加密都需要）
-    if (data[0] != 0x01) {
+    if (data[0] != PacketType::AUDIO) {
         ESP_LOGE(TAG, "Invalid audio packet type: 0x%02X", data[0]);
         return;
     }

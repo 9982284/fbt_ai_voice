@@ -1,0 +1,13 @@
+{
+    "target": "esp32s3",
+    "builds": [
+        {
+            "name": "fbt-esp32s3",
+            "sdkconfig_append": [
+                "CONFIG_IOT_PROTOCOL_MCP=y",
+                "CONFIG_AUDIO_CODEC_VB6824=y",
+                "CONFIG_USE_FBT_SCREEN_TOUCH=y"
+            ]
+        }
+    ]
+}

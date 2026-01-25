@@ -1,0 +1,44 @@
+#ifndef _BOARD_CONFIG_H_
+#define _BOARD_CONFIG_H_
+
+// 指示灯
+#define BUILTIN_LED_GPIO GPIO_NUM_21
+
+#define KEY_BUTTON_GPIO GPIO_NUM_45
+
+#define CODEC_TX_GPIO GPIO_NUM_8
+#define CODEC_RX_GPIO GPIO_NUM_18
+
+#define DISPLAY_WIDTH 280
+#define DISPLAY_HEIGHT 240
+#define DISPLAY_MIRROR_X false
+#define DISPLAY_MIRROR_Y true
+#define DISPLAY_SWAP_XY true
+
+#define DISPLAY_OFFSET_X 20
+#define DISPLAY_OFFSET_Y 0
+
+#define DISPLAY_DC_GPIO GPIO_NUM_44
+#define DISPLAY_CS_GPIO GPIO_NUM_42
+#define DISPLAY_CLK_GPIO GPIO_NUM_41
+#define DISPLAY_MOSI_GPIO GPIO_NUM_40
+#define DISPLAY_RST_GPIO GPIO_NUM_39
+
+#define DISPLAY_BACKLIGHT_PIN GPIO_NUM_15
+#define DISPLAY_BACKLIGHT_OUTPUT_INVERT false
+
+#define TOUCH_I2C_PORT I2C_NUM_1
+#define TOUCH_I2C_SDA_GPIO ((gpio_num_t)5) // 强制类型转换
+#define TOUCH_I2C_SCL_GPIO ((gpio_num_t)6) // 强制类型转换
+#define TOUCH_I2C_ADDRESS 0x15
+#define TOUCH_IRQ_GPIO ((gpio_num_t)12) // 强制类型转换
+#define TOUCH_RST_GPIO GPIO_NUM_NC      // 如果没有复位引脚
+
+#define ML307_RX_PIN GPIO_NUM_6
+#define ML307_TX_PIN GPIO_NUM_5
+
+#define TOGGLE_4G_SWITCH GPIO_NUM_4
+
+#endif
+
+// _BOARD_CONFIG_H_

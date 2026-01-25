@@ -42,6 +42,17 @@ enum FbtRtcState {
     kTuneIn,
 
 };
+/**
+ * 网络协议
+ */
+typedef enum : uint8_t {
+    CONTROL = 0x00,          // 信令
+    RELIABLE_CONTROL = 0x01, // 必达
+    KEEPALIVE = 0x02,        // 心跳
+    ACK = 0x05,              // 确认
+    AUDIO = 0x10,            // 音频
+    UNKNOWN = 0xFF           // 未知类型
+} PacketType;
 
 namespace FbtEvents {
     // 事件类型常量

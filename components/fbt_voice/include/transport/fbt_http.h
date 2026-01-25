@@ -7,15 +7,22 @@
 class FbtHttp {
 
   public:
-    FbtHttp(/* args */);
-    ~FbtHttp();
-    std::string GetConfig();
+    static FbtHttp &Instance() {
+        static FbtHttp instance;
+        return instance;
+    }
+
+    void GetConfig();
+    std::unique_ptr<Http> SetupHttp();
 
   private:
-    std::unique_ptr<Http> setup_http();
+    FbtHttp() {};
+    ~FbtHttp() {};
+
+    FbtHttp(const FbtHttp &) = delete;
+    FbtHttp &operator=(const FbtHttp &) = delete;
+
     std::string gen_config_body();
-    std::string get_ota_url();
-    std::string get_config_url();
 };
 
 #endif // FBT_HTTP
