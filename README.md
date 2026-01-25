@@ -8,7 +8,7 @@
 
 - 👉[烧录完进这里连接设备 **【后台管理地址】**](https://voice.fbtai.cn/)
 
-- 👉[国内用户访问进这里 **【gitee】**](https://gitee.com/fbtgateway/fbt_ai_voice)
+- 👉[gitee同步更新，**【国内用户访问进这里 gitee】**](https://gitee.com/fbtgateway/fbt_ai_voice)
 
 - 👉 [一套 AI 语音通讯方案，可以让ai帮你拔打电话，进入对讲室，管理群组，针对移动网络的特殊优化【bilibili】](https://www.bilibili.com/video/BV1f6zrBCEVw/?spm_id_from=333.788.recommend_more_video.-1&trackid=web_related_0.router-related-2206419-k4qpm.1769317377521.3)
 
